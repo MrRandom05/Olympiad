@@ -11,6 +11,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using System.Linq;
 using Microsoft.IdentityModel.Tokens;
+using Azure.Core;
 
 namespace Normal
 {
@@ -34,7 +35,7 @@ namespace Normal
 
             // Configure the HTTP request pipeline.
 
-            app.MapPost("/registration", async ([FromQuery] string? firstName, [FromQuery] string? lastName, [FromQuery] string? email, [FromQuery] string? password, ContextClass db) =>
+         /*   app.MapPost("/registration", async ([FromQuery] string? firstName, [FromQuery] string? lastName, [FromQuery] string? email, [FromQuery] string? password, ContextClass db) =>
             {
                 var acc = new Account { Password= password, Email = email, FirstName = firstName, LastName = lastName };
                 if (string.IsNullOrEmpty(acc.Email) | string.IsNullOrEmpty(acc.FirstName) | string.IsNullOrEmpty(acc.LastName) | string.IsNullOrEmpty(acc.Password))
@@ -55,13 +56,13 @@ namespace Normal
                 return Results.Json(acc);
             });
 
-            app.MapGet("/accounts/{accountId}", async (int accountId, ContextClass db) =>
-            {
-                if (accountId == null | accountId < 0) return Results.StatusCode(400);
-                var acc = await db.Accounts.FirstOrDefaultAsync(x => x.Id == accountId);
-                if (acc == null) return Results.StatusCode(404);
-                return Results.Json(acc);
-            });
+             app.MapGet("/accounts/{accountId}", async (int accountId, ContextClass db) =>
+             {
+                 if (accountId == null | accountId < 0) return Results.StatusCode(400);
+                 var acc = await db.Accounts.FirstOrDefaultAsync(x => x.Id == accountId);
+                 if (acc == null) return Results.StatusCode(404);
+                 return Results.Json(acc);
+             });
 
             app.MapGet("/accounts/search", async ([FromQuery]string? firstName, [FromQuery]string? lastName, [FromQuery]string? email, [FromQuery]int? from, [FromQuery] int? size, ContextClass db) =>
             {
@@ -444,7 +445,7 @@ namespace Normal
                 return Results.StatusCode(200);
 
             });
-
+            */
 
 
             if (app.Environment.IsDevelopment())

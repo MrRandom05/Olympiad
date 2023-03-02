@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using static Normal.Controllers.AuthenticationController;
 
 namespace Normal.Controllers
 {
@@ -18,6 +19,9 @@ namespace Normal.Controllers
         [HttpGet("/{animalId}")]
         public async Task<ActionResult> GetAnimal(long animalId)
         {
+            AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
+            if (auth == AuthRes.Error) return StatusCode(401);
+
             if (animalId == null | animalId <= 0) return StatusCode(400);
             var animal = db.Animals.Where(x => x.Id == animalId).Include(x => x.AnimalTypes).Include(x => x.VisitedLocations).FirstOrDefault();
             if (animal == null) return StatusCode(404);
@@ -27,6 +31,9 @@ namespace Normal.Controllers
         [HttpGet("/search")]
         public async Task<ActionResult> SearchAnimal([FromQuery] DateTime? startDateTime, [FromQuery] DateTime? endDateTime, [FromQuery] int? chipperId, [FromQuery] long? chippingLocationId, [FromQuery] string? lifeStatus, [FromQuery] string? gender, [FromQuery] int? from, [FromQuery] int? size)
         {
+            AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
+            if (auth == AuthRes.Error) return StatusCode(401);
+
             if (from < 0 | size <= 0 | chipperId <= 0 | chippingLocationId <= 0) return StatusCode(400);
             //if (startDateTime.ToString() != string.Format($"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffzzz") | endDateTime.ToString() != string.Format($"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffzzz")) return Results.StatusCode(400);
             if (lifeStatus != null)
@@ -67,6 +74,9 @@ namespace Normal.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateAnimal([FromQuery] long[] animalTypes, [FromQuery] float weight, [FromQuery] float length, [FromQuery] float height, [FromQuery] string gender, [FromQuery] int chipperId, [FromQuery] long chippingLocationId)
         {
+            AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
+            if (auth != AuthRes.Ok) return StatusCode(401);
+
             if (animalTypes == null | animalTypes.Length <= 0 | weight == null | weight <= 0 | length == null | length <= 0 | height == null | height <= 0 |
                 gender == null | gender.ToLower() != "male" & gender.ToLower() != "female" & gender.ToLower() != "other" | chipperId == null | chipperId <= 0 |
                 chippingLocationId == null | chippingLocationId <= 0) return StatusCode(400);
@@ -109,6 +119,9 @@ namespace Normal.Controllers
         [HttpPut("/{animalId}")]
         public async Task<ActionResult> UpdateAnimal([FromQuery] long animalId, [FromQuery] float weight, [FromQuery] float length, [FromQuery] float height, [FromQuery] string gender, [FromQuery] string lifeStatus, [FromQuery] int chipperId, [FromQuery] long chippingLocationId)
         {
+            AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
+            if (auth != AuthRes.Ok) return StatusCode(401);
+
             if (weight == null | weight <= 0 | length == null | length <= 0 | height == null | height <= 0 | chipperId <= 0 | chipperId == null | lifeStatus.ToLower() != "alive" & lifeStatus.ToLower() != "dead" |
                 gender == null | gender.ToLower() != "male" & gender.ToLower() != "female" & gender.ToLower() != "other" | chipperId == null | chipperId <= 0 |
                 chippingLocationId == null | chippingLocationId <= 0) return StatusCode(400);
@@ -132,6 +145,9 @@ namespace Normal.Controllers
         [HttpDelete("/{animalId}")]
         public async Task<ActionResult> DeleteAnimal([FromQuery] long animalId)
         {
+            AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
+            if (auth != AuthRes.Ok) return StatusCode(401);
+
             if (animalId == null | animalId <= 0) return StatusCode(400);
             var animal = db.Animals.Find(animalId);
             if (animal == null) return StatusCode(404);
@@ -145,6 +161,9 @@ namespace Normal.Controllers
         [HttpPost("/{animalId}/types/{typeId}")]
         public async Task<ActionResult> AddTypeToAnimal([FromQuery] long animalId, [FromQuery] long typeId)
         {
+            AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
+            if (auth != AuthRes.Ok) return StatusCode(401);
+
             if (animalId == null || typeId == null || animalId <= 0 || typeId <= 0) return StatusCode(400);
             if (db.Animals.Find(animalId) == null || db.AnimalTypes.Find(typeId) == null) return StatusCode(404);
             var animal = db.Animals.Where(x => x.Id == animalId).Include(x => x.AnimalTypes).FirstOrDefault();
@@ -159,6 +178,9 @@ namespace Normal.Controllers
         [HttpPut("/{animalId}/types")]
         public async Task<ActionResult> UpdateTypeAnimal([FromQuery] long animalId, [FromQuery] long oldTypeId, [FromQuery] long newTypeId)
         {
+            AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
+            if (auth != AuthRes.Ok) return StatusCode(401);
+
             if (animalId == null || animalId <= 0 || oldTypeId == null || oldTypeId <= 0 || newTypeId == null || newTypeId <= 0) return StatusCode(400);
             var animal = db.Animals.Where(x => x.Id == animalId).Include(x => x.AnimalTypes).FirstOrDefault();
             var oldType = db.AnimalTypes.Find(oldTypeId);
@@ -177,6 +199,9 @@ namespace Normal.Controllers
         [HttpDelete("/{animalId}/types/{typeId}")]
         public async Task<ActionResult> DeleteTypeAnimal([FromQuery] long animalId, [FromQuery] long typeId)
         {
+            AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
+            if (auth != AuthRes.Ok) return StatusCode(401);
+
             if (animalId <= 0 || animalId == null || typeId <= 0 || typeId == null || db.Animals.Find(animalId).AnimalTypes.Contains(db.AnimalTypes.Find(typeId)) && db.Animals.Find(animalId).AnimalTypes.Count == 1) return StatusCode(400);
             if (db.Animals.Find(animalId) == null || db.AnimalTypes.Find(typeId) == null || db.Animals.Where(x => x.Id == animalId).Include(x => x.AnimalTypes).Where(x => x.AnimalTypes.Contains(db.AnimalTypes.Find(typeId))).FirstOrDefault() == null) return StatusCode(404);
             var temp = db.Animals.Where(x => x.Id == animalId).Include(x => x.AnimalTypes).FirstOrDefault();

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using static Normal.Controllers.AuthenticationController;
 
 namespace Normal.Controllers
 {
@@ -16,6 +17,9 @@ namespace Normal.Controllers
         [HttpGet("animals/{animalId}/locations")]
         public async Task<ActionResult> GetAnimalVisitedPoints([FromQuery] long animalId, [FromQuery] DateTime? startDateTime, [FromQuery] DateTime? endDateTime, [FromQuery] int? from, [FromQuery] int? size)
         {
+            AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
+            if (auth == AuthRes.Error) return StatusCode(401);
+
             if (animalId == null || animalId <= 0 || from < 0 || size <= 0) return StatusCode(400);
             if (db.Animals.Find(animalId) == null) return StatusCode(404);
             if (size == null) size = 10;
@@ -34,6 +38,9 @@ namespace Normal.Controllers
         [HttpPost("animals/{animalId}/locations/{pointId}")]
         public async Task<ActionResult> AddVisitedLocationpointToAnimal([FromQuery] long animalId, [FromQuery] long pointId)
         {
+            AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
+            if (auth != AuthRes.Ok) return StatusCode(401);
+
             if (animalId == null || animalId <= 0 || pointId == null || pointId <= 0) return StatusCode(400);
             var animal = db.Animals.Where(x => x.Id == animalId).Include(x => x.VisitedLocations).FirstOrDefault();
             var point = db.LocationPoints.Find(pointId);
@@ -52,6 +59,9 @@ namespace Normal.Controllers
         [HttpPut("animals/{animalId}/locations")]
         public async Task<ActionResult> UpdateAnimalVisitedLocation([FromQuery] long animalId, [FromQuery] long visitedLocationPointId, [FromQuery] long locationPointId)
         {
+            AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
+            if (auth != AuthRes.Ok) return StatusCode(401);
+
             if (animalId == null || animalId <= 0 || visitedLocationPointId == null || visitedLocationPointId <= 0 || locationPointId == null || locationPointId <= 0) return StatusCode(400);
             var animal = db.Animals.Where(x => x.Id == animalId).Include(z => z.VisitedLocations).Where(x => x.VisitedLocations.Contains(db.AnimalVisitedLocations.Find(visitedLocationPointId))).FirstOrDefault();
             var oldVisitedLocationPoint = db.AnimalVisitedLocations.Where(x => x.Id == visitedLocationPointId).FirstOrDefault();
@@ -69,6 +79,9 @@ namespace Normal.Controllers
         [HttpDelete("animals/{animalId}/locations/{visitedPointId}")]
         public async Task<ActionResult> DeleteAnimalVisitedPoint([FromQuery] long animalId, [FromQuery] long visitedPointId)
         {
+            AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
+            if (auth != AuthRes.Ok) return StatusCode(401);
+
             if (animalId == null || animalId <= 0 || visitedPointId == null || visitedPointId <= 0) return StatusCode(400);
             var animal = db.Animals.Where(x => x.Id == animalId).Include(x => x.VisitedLocations).FirstOrDefault();
             var point = db.AnimalVisitedLocations.Where(x => x.Id == visitedPointId).FirstOrDefault();
@@ -83,8 +96,6 @@ namespace Normal.Controllers
                     db.SaveChanges();
                 }
             }
-            //animal.VisitedLocations.Remove(db.AnimalVisitedLocations.Where(x => x.Id == visitedPointId).FirstOrDefault());
-            //db.Animals.Update(animal);
             db.AnimalVisitedLocations.Where(x => x.Id == visitedPointId).ExecuteDelete();
             db.SaveChanges();
             return StatusCode(200);

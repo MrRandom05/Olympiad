@@ -41,6 +41,9 @@ namespace Normal.Controllers
         [HttpGet("search")]
         public async Task<ActionResult<Account>> Search([FromQuery] string? firstName, [FromQuery] string? lastName, [FromQuery] string? email, [FromQuery] int? from, [FromQuery] int? size)
         {
+            AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
+            if (auth == AuthRes.Error) return StatusCode(401);
+
             IQueryable<Account> res = db.Accounts.AsQueryable();
             if (from < 0 | size <= 0) return new StatusCodeResult(StatusCodes.Status400BadRequest);
             if (from == null) from = 0;

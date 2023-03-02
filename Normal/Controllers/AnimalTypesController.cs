@@ -6,7 +6,6 @@ using static Normal.Controllers.AuthenticationController;
 namespace Normal.Controllers
 {
     [ApiController]
-    [Route("/animals/types")]
     public class AnimalTypesController : Controller
     {
         private readonly ContextClass db;
@@ -15,7 +14,7 @@ namespace Normal.Controllers
             this.db = db;
         }
 
-        [HttpGet("/{typeId}")]
+        [HttpGet("/animals/types/{typeId}")]
         public async Task<ActionResult> GetType(long typeId)
         {
             AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
@@ -27,7 +26,7 @@ namespace Normal.Controllers
             return Json(point);
         }
 
-        [HttpPost]
+        [HttpPost("/animals/types")]
         public async Task<ActionResult> CreateType([FromQuery] string type)
         {
             AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
@@ -41,7 +40,7 @@ namespace Normal.Controllers
             return new ObjectResult(aType) { StatusCode = 201 };
         }
 
-        [HttpPut("/{typeId}")]
+        [HttpPut("/animals/types/{typeId}")]
         public async Task<ActionResult> UpdateType([FromQuery] long typeId, [FromQuery] string type)
         {
             AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
@@ -56,7 +55,7 @@ namespace Normal.Controllers
             return Json(aType);
         }
 
-        [HttpDelete("/{typeId}")]
+        [HttpDelete("/animals/types/{typeId}")]
         public async Task<ActionResult> DeleteType([FromQuery] long typeId)
         {
             AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);

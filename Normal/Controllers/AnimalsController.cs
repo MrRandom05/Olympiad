@@ -16,7 +16,7 @@ namespace Normal.Controllers
             this.db = db;
         }
 
-        [HttpGet("/{animalId}")]
+        [HttpGet("/animals/{animalId}")]
         public async Task<ActionResult> GetAnimal(long animalId)
         {
             AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
@@ -28,7 +28,7 @@ namespace Normal.Controllers
             return Json(animal);
         }
 
-        [HttpGet("/search")]
+        [HttpGet("/animals/search")]
         public async Task<ActionResult> SearchAnimal([FromQuery] DateTime? startDateTime, [FromQuery] DateTime? endDateTime, [FromQuery] int? chipperId, [FromQuery] long? chippingLocationId, [FromQuery] string? lifeStatus, [FromQuery] string? gender, [FromQuery] int? from, [FromQuery] int? size)
         {
             AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
@@ -71,7 +71,7 @@ namespace Normal.Controllers
             return Json(animals);
         }
 
-        [HttpPost]
+        [HttpPost("/animals")]
         public async Task<ActionResult> CreateAnimal([FromQuery] long[] animalTypes, [FromQuery] float weight, [FromQuery] float length, [FromQuery] float height, [FromQuery] string gender, [FromQuery] int chipperId, [FromQuery] long chippingLocationId)
         {
             AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
@@ -116,7 +116,7 @@ namespace Normal.Controllers
             return new ObjectResult(an) { StatusCode = 201 };
         }
 
-        [HttpPut("/{animalId}")]
+        [HttpPut("/animals/{animalId}")]
         public async Task<ActionResult> UpdateAnimal([FromQuery] long animalId, [FromQuery] float weight, [FromQuery] float length, [FromQuery] float height, [FromQuery] string gender, [FromQuery] string lifeStatus, [FromQuery] int chipperId, [FromQuery] long chippingLocationId)
         {
             AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
@@ -142,7 +142,7 @@ namespace Normal.Controllers
             return Json(animal);
         }
 
-        [HttpDelete("/{animalId}")]
+        [HttpDelete("/animals/{animalId}")]
         public async Task<ActionResult> DeleteAnimal([FromQuery] long animalId)
         {
             AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
@@ -158,7 +158,7 @@ namespace Normal.Controllers
             return StatusCode(200);
         }
 
-        [HttpPost("/{animalId}/types/{typeId}")]
+        [HttpPost("/animals/{animalId}/types/{typeId}")]
         public async Task<ActionResult> AddTypeToAnimal([FromQuery] long animalId, [FromQuery] long typeId)
         {
             AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
@@ -175,7 +175,7 @@ namespace Normal.Controllers
             return new ObjectResult(res) { StatusCode = 201 };
         }
 
-        [HttpPut("/{animalId}/types")]
+        [HttpPut("/animals/{animalId}/types")]
         public async Task<ActionResult> UpdateTypeAnimal([FromQuery] long animalId, [FromQuery] long oldTypeId, [FromQuery] long newTypeId)
         {
             AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
@@ -196,7 +196,7 @@ namespace Normal.Controllers
             return new ObjectResult(animal) { StatusCode = 201 };
         }
 
-        [HttpDelete("/{animalId}/types/{typeId}")]
+        [HttpDelete("/animals/{animalId}/types/{typeId}")]
         public async Task<ActionResult> DeleteTypeAnimal([FromQuery] long animalId, [FromQuery] long typeId)
         {
             AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);

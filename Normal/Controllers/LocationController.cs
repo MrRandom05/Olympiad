@@ -7,7 +7,6 @@ using static Normal.Controllers.AuthenticationController;
 namespace Normal.Controllers
 {
     [ApiController]
-    [Route("/locations")]
     public class LocationController : Controller
     {
         private readonly ContextClass db;
@@ -16,7 +15,7 @@ namespace Normal.Controllers
             this.db = db;
         }
 
-        [HttpGet("/{pointId}")]
+        [HttpGet("/locations/{pointId}")]
         public async Task<ActionResult> GetLocation(long pointId)
         {
             AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
@@ -28,7 +27,7 @@ namespace Normal.Controllers
             else return Json(point);
         }
 
-        [HttpPost]
+        [HttpPost("/locations")]
         public async Task<ActionResult> CreateLocation([FromQuery] double latitude, [FromQuery] double longitude)
         {
             AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
@@ -43,7 +42,7 @@ namespace Normal.Controllers
             return new ObjectResult(point) { StatusCode = 201 };
         }
 
-        [HttpPut("/{poitId}")]
+        [HttpPut("/locations/{poitId}")]
         public async Task<ActionResult> UpdateLocation([FromQuery] long pointId, [FromQuery] double longitude, [FromQuery] double latitude)
         {
             AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);
@@ -57,7 +56,7 @@ namespace Normal.Controllers
             return Json(point);
         }
 
-        [HttpDelete("/{pointId}")]
+        [HttpDelete("/locations/{pointId}")]
         public async Task<ActionResult> DeleteLocation([FromQuery] long pointId)
         {
             AuthRes auth = Authorization(HttpContext.Request.Headers["Authorization"], db, out _);

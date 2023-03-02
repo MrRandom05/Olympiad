@@ -49,7 +49,7 @@ namespace Normal.Controllers
 
         public static AuthRes Authorization(string? logpass, ContextClass db, out long? id)
         {
-            logpass = "Basic cUBnbWFpbC5jb206MTIzNA=="; // debug inf
+            //logpass = "Basic cUBnbWFpbC5jb206MTIzNA=="; // debug inf
 
             id = null;
             if (logpass == null) return AuthRes.Not;

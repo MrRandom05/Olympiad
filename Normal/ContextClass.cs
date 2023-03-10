@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Normal.Models;
 
 namespace Normal
 {
